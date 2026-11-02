@@ -1,0 +1,6 @@
+﻿# 运行这套壳需要的第三方依赖
+pillow>=10.0
+websocket-client>=1.7
+
+# AstrBot 自己的依赖更多，请参考 AstrBot 的安装说明；
+# 本文件只列 scripts/ 里直接 import 的东西。

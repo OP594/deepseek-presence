@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>她的家</title>
+<style>
+  :root { --ink:#2c2622; --dim:#8c7f76; --line:#e2dad0; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Microsoft YaHei", system-ui, sans-serif; background:#f6f2ec; color:var(--ink); }
+  header { padding:14px 22px; background:#fffdf9; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:18px; align-items:baseline; }
+  header h1 { font-size:19px; margin:0 8px 0 0; font-weight:600; }
+  header .kv { font-size:14px; color:var(--dim); }
+  #room { position:relative; margin:18px auto; background:#f3ece2; border-radius:16px; box-shadow:0 6px 28px rgba(80,60,40,.12); overflow:hidden; }
+  .f { position:absolute; border-radius:14px; border:2px solid #cec4ba; display:flex; flex-direction:column;
+       align-items:center; justify-content:center; cursor:grab; user-select:none; transition:box-shadow .15s; }
+  .f.here { border:4px solid #347c68; box-shadow:0 0 0 4px rgba(52,124,104,.12); }
+  .f .e { font-size:34px; line-height:1; }
+  .f .n { margin-top:8px; font-size:14px; color:#4a423c; }
+  .badge { position:absolute; width:38px; height:38px; margin:-19px 0 0 -19px; border-radius:50%;
+           background:#347c68; color:#fff; display:flex; align-items:center; justify-content:center;
+           font-size:15px; box-shadow:0 3px 10px rgba(0,0,0,.25); pointer-events:none; }
+  footer { text-align:center; color:var(--dim); font-size:13px; padding:0 0 26px; }
+  .toast { position:fixed; left:50%; bottom:30px; transform:translateX(-50%); background:#2c2622; color:#fff;
+           padding:9px 18px; border-radius:20px; font-size:14px; opacity:0; transition:opacity .25s; }
+  .toast.on { opacity:.92; }
+</style>
+</head>
+<body>
+<header>
+  <h1>她的家</h1>
+  <span class="kv" id="where">读状态中…</span>
+  <span class="kv" id="stats"></span>
+  <span class="kv" id="next"></span>
+</header>
+<div id="room"></div>
+<footer>拖动家具摆位置 · 点家具让她去做那件事 · 每 10 秒刷新状态</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = "/api/plug/astrbot_plugin_virtual_activity";
+const roomEl = document.getElementById("room");
+let room = null, state = null, W = 1000, H = 700;
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 1800);
+}
+
+async function load() {
+  const [r1, r2] = await Promise.all([
+    fetch(API + "/room").then(r => r.json()),
+    fetch(API + "/state").then(r => r.json()),
+  ]);
+  room = r1.room; state = r2.status;
+  const cv = (room.room && room.room.canvas) || {};
+  W = cv.width || 1000; H = cv.height || 700;
+  roomEl.style.width = W + "px"; roomEl.style.height = H + "px";
+  roomEl.style.background = cv.background || "#f3ece2";
+  draw();
+  drawState();
+}
+
+function drawState() {
+  const s = (state && state.state) || {};
+  const b = s.behavior || {};
+  const where = b.furniture_name ? `她现在：在${b.furniture_name}，${b.name || ""}` : "她现在：没在做什么";
+  document.getElementById("where").textContent = where;
+  document.getElementById("stats").textContent =
+    `精力 ${Math.round(s.energy || 0)}　社交 ${Math.round(s.social_hunger || 0)}`;
+  const n = state && state.next_tick_in_sec;
+  document.getElementById("next").textContent = n ? `下次活动 ${Math.round(n / 60)} 分钟后` : "";
+}
+
+function draw() {
+  [...roomEl.querySelectorAll(".f,.badge")].forEach(e => e.remove());
+  const s = (state && state.state) || {};
+  const pos = s.position || {};
+  const here = pos.furniture_id;
+  (room.furniture || []).slice().sort((a, b) => (a.z || 0) - (b.z || 0)).forEach(it => {
+    const d = document.createElement("div");
+    d.className = "f" + (it.id === here ? " here" : "");
+    d.style.left = it.x + "px"; d.style.top = it.y + "px";
+    d.style.width = it.w + "px"; d.style.height = it.h + "px";
+    d.style.background = it.color || "#d8cfc4";
+    d.innerHTML = `<div class="e">${it.emoji || ""}</div><div class="n">${it.name || ""}</div>`;
+    d.title = (it.effects || []).map(e => e.name).join(" / ");
+    makeDraggable(d, it);
+    d.addEventListener("click", ev => {
+      if (d._moved) { d._moved = false; return; }
+      trigger(it);
+    });
+    roomEl.appendChild(d);
+  });
+  if (pos.x != null && pos.y != null) {
+    const b = document.createElement("div");
+    b.className = "badge";
+    b.style.left = pos.x + "px"; b.style.top = (pos.y - 30) + "px";
+    b.textContent = "鲸";
+    roomEl.appendChild(b);
+  }
+}
+
+function makeDraggable(el, it) {
+  let sx, sy, ox, oy, dragging = false;
+  el.addEventListener("mousedown", ev => {
+    dragging = true; el._moved = false;
+    sx = ev.clientX; sy = ev.clientY; ox = it.x; oy = it.y;
+    el.style.cursor = "grabbing";
+    ev.preventDefault();
+  });
+  window.addEventListener("mousemove", ev => {
+    if (!dragging) return;
+    const dx = ev.clientX - sx, dy = ev.clientY - sy;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) el._moved = true;
+    it.x = Math.max(0, Math.min(W - it.w, ox + dx));
+    it.y = Math.max(0, Math.min(H - it.h, oy + dy));
+    el.style.left = it.x + "px"; el.style.top = it.y + "px";
+  });
+  window.addEventListener("mouseup", async () => {
+    if (!dragging) return;
+    dragging = false; el.style.cursor = "grab";
+    if (!el._moved) return;
+    await fetch(API + "/room/save", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ room: room }),
+    });
+    toast("位置存好了");
+  });
+}
+
+async function trigger(it) {
+  toast(`让她去${it.name}…`);
+  try {
+    const r = await fetch(API + "/trigger", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ furniture_id: it.id }),
+    });
+    const d = await r.json();
+    if (d && d.ok === false) toast(d.message || "没去成");
+    await new Promise(res => setTimeout(res, 800));
+    load();
+  } catch (e) { toast("没连上"); }
+}
+
+load();
+setInterval(() => fetch(API + "/state").then(r => r.json()).then(d => { state = d.status; drawState();
+  const s = (state && state.state) || {}; if ((s.position || {}).furniture_id) draw(); }).catch(() => {}), 10000);
+</script>
+</body>
+</html>

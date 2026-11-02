@@ -1,0 +1,10 @@
+{
+  "name": "companion",
+  "owner_qq": 0,
+  "self_qq": 0,
+  "umo": "",
+  "persona_id": "default",
+  "onebot_port": 3000,
+  "astrbot_port": 6185,
+  "proxy_port": 6186
+}
