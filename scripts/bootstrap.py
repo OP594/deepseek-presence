@@ -307,10 +307,12 @@ def main() -> None:
     init_persona(py)
 
     print(
-        "\n装完了。下一步：\n"
-        "  1. 打开 http://127.0.0.1:6185 配 provider 和 key\n"
-        "  2. 双击 scripts\\start-all.bat 启动\n"
-        "  3. 双击 scripts\\start-gui.bat 看状态\n"
+        "\n装完了。还差三步，都是没法替你做的：\n"
+        "  1. 双击 deps\\SnowLuma\\launcher.bat，用机器人 QQ 扫码登录（它要同意自己的 EULA）\n"
+        "  2. 双击 scripts\\start-all.bat，等它起来\n"
+        "  3. 打开 http://127.0.0.1:6185，设网页密码、填 DeepSeek key\n"
+        "\n等她收到第一条消息后，跑一遍 scripts\\find_umo.py，把会话 ID 填进 config.json 的 umo，\n"
+        "主动消息和屋子活动才会生效。\n"
     )
 
 

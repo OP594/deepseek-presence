@@ -134,6 +134,20 @@ deps\venv\Scripts\python scripts\init_persona.py 你的名字
 
 AstrBot 里配 provider：主模型 `deepseek-v4-pro`，识图和杂活用 `deepseek-v4.1-flash`。
 
+## 装完还差什么
+
+`install.bat` 跑完，代码、插件、人格、配置都就位了，但下面这几件**只能你自己做**：
+
+| 步骤 | 为什么 | 必需 |
+| --- | --- | --- |
+| 双击 `deps\SnowLuma\launcher.bat`，用机器人 QQ 扫码登录 | 不登录就收不到消息 | 是 |
+| 打开 http://127.0.0.1:6185，设网页密码 | AstrBot 首次启动要求 | 是 |
+| 在同一个页面填 DeepSeek 的 key | 没 key 她不会说话 | 是 |
+| 她收到第一条消息后跑 `scripts\find_umo.py`，把结果填进 `config.json` 的 `umo` | 主动消息、屋子活动要靠它定位会话 | 建议 |
+| 想让她画画，再配一个生图插件的 key | 画图能力来自第三方插件 | 可选 |
+
+填完 `umo` 后重启一次 `scripts\start-all.bat`。
+
 ## 用
 
 ```bat
