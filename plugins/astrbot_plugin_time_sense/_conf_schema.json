@@ -1,0 +1,22 @@
+{
+  "enabled": {
+    "type": "bool",
+    "description": "启用时间感",
+    "default": true
+  },
+  "long_gap_hours": {
+    "type": "int",
+    "description": "超过多少小时算“她离开了很长一段时间”（默认 24 = 一天）",
+    "default": 24
+  },
+  "note_gap_hours": {
+    "type": "int",
+    "description": "超过多少小时开始把间隔带进上下文（默认 1 小时；低于这个不打扰）",
+    "default": 1
+  },
+  "mention_long_gap": {
+    "type": "bool",
+    "description": "长时间没来时，是否提示她可以表现出来（想你 / 注意到你走了很久）",
+    "default": true
+  }
+}

@@ -1,0 +1,11 @@
+name: astrbot_plugin_recall_guard
+display_name: "撤回不回复"
+short_desc: "撤回的消息不回复、也不留在上下文里"
+desc: 收到 QQ 撤回通知时不回复通知本身；被撤回消息的回复如果还没发出去就丢掉；同时把被撤回的那条消息（连同它后面的回复）从会话上下文里删掉，避免她接着聊已经撤回的内容。
+version: 1.1.0
+author: "deepseek-presence"
+repo: ""
+astrbot_version: ">=4.20,<5"
+tags:
+  - recall
+  - notice

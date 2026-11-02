@@ -1,0 +1,5 @@
+name: astrbot_plugin_fish_memory
+desc: deepseek-presence · 长期记忆：每聊几轮自动提炼事实、写反思，回话前自动带上
+author: "deepseek-presence"
+version: 1.0.0
+repo: ""

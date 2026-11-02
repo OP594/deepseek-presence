@@ -1,0 +1,13 @@
+name: astrbot_plugin_file_reader
+display_name: "文件阅读"
+short_desc: "发文件给她，她读完再回"
+desc: 收到文件时自动解析内容（PDF / Word / Excel / PPT / 网页 / 文本 / 代码）。短文件全文带进对话，长文件分段读完整理成笔记，并保留原文索引供按关键词回查。
+version: 2.0.0
+author: "deepseek-presence"
+repo: ""
+astrbot_version: ">=4.20,<5"
+tags:
+  - file
+  - pdf
+  - document
+  - long-context

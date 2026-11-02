@@ -1,0 +1,11 @@
+name: astrbot_plugin_room_nudge
+display_name: "屋里该收拾了"
+short_desc: "隔一阵提醒她动动屋子"
+desc: 每隔一段时间（默认 20–36 小时随机）在她回话前塞一句“你有阵子没动屋子了”，让她想起来用 decorate_room 添东西或挪位置。
+version: 1.0.0
+author: "deepseek-presence"
+repo: ""
+astrbot_version: ">=4.20,<5"
+tags:
+  - room
+  - nudge

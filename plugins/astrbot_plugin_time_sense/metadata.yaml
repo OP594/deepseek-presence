@@ -1,0 +1,11 @@
+name: astrbot_plugin_time_sense
+display_name: "时间感"
+short_desc: "让她知道你隔了多久才回来"
+desc: 记住每个会话最后一条消息的时间，下次说话时把“距上次对话多久”带进上下文。超过 24 小时会告诉她“她已经一天多没来了”，让她知道你不是刚走。
+version: 1.0.0
+author: "deepseek-presence"
+repo: ""
+astrbot_version: ">=4.20,<5"
+tags:
+  - time
+  - presence

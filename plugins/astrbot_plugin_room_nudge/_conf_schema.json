@@ -1,0 +1,17 @@
+{
+  "enabled": {
+    "type": "bool",
+    "description": "启用屋里提醒",
+    "default": true
+  },
+  "min_hours": {
+    "type": "int",
+    "description": "最短间隔（小时）",
+    "default": 20
+  },
+  "max_hours": {
+    "type": "int",
+    "description": "最长间隔（小时）",
+    "default": 36
+  }
+}

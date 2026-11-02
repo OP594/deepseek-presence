@@ -1,0 +1,33 @@
+﻿{
+  "enabled": {
+    "type": "bool",
+    "description": "启用文件读取",
+    "default": true
+  },
+  "max_chars": {
+    "type": "int",
+    "description": "短文件直接注入时的字数上限",
+    "default": 30000
+  },
+  "small_limit": {
+    "type": "int",
+    "description": "正文不超过这个字数就直接全文注入；超过就分段读",
+    "default": 30000
+  },
+  "max_chunks": {
+    "type": "int",
+    "description": "长文件最多读多少段（每段约 8000 字），再多就截断",
+    "default": 40
+  },
+  "ttl_seconds": {
+    "type": "int",
+    "description": "文件内容注入的有效期（秒）",
+    "default": 300
+  },
+  "session_ttl_seconds": {
+    "type": "int",
+    "description": "读完的笔记和原文索引在会话里保留多久（秒），这段时间内可以用 search_file 追问",
+    "default": 1800
+  }
+}
+

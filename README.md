@@ -31,12 +31,14 @@ scripts/  ← 这套东西
    └─ gui                  一个窗口看状态、对话、记忆、屋子
 ```
 
+**AstrBot 和 SnowLuma 是这个项目的主体**，本仓库只是给它俩加的那层「长期在场」的壳（看护、日记、说说、评论、屋子、代理、备份、GUI）。它们不在仓库里，需要单独装。
+
 ## 装之前要有
 
 1. **Windows 10/11**
 2. **Python 3.11+**，并建好虚拟环境：`python -m venv deps\venv`
-3. **AstrBot 4.29.x**，装在 `deps\astrbot-home`，跑在 6185
-4. **SnowLuma**（或 NapCat），装在 `deps\SnowLuma`，OneBot HTTP 开在 3000
+3. **[AstrBot](https://github.com/AstrBotDevs/AstrBot) 4.29.x**（AGPL-3.0），装在 `deps\astrbot-home`，跑在 6185
+4. **[SnowLuma](https://github.com/SnowLuma/SnowLuma)**（或 NapCat），装在 `deps\SnowLuma`，OneBot HTTP 开在 3000
 5. 一个能用的 LLM key（DeepSeek、智谱、方舟都行），填在 AstrBot 里
 
 目录长这样：
@@ -69,6 +71,12 @@ copy config.example.json config.json
 | `self_qq` | 机器人的 QQ 号 |
 | `umo` | 私聊会话 ID，形如 `snowluma:FriendMessage:123456` |
 | `persona_id` | AstrBot 里的人格 id，一般 `default` |
+
+把仓库里的五个插件放进 AstrBot 的插件目录：
+
+```bat
+xcopy /E /I plugins deps\astrbot-home\data\plugins
+```
 
 装依赖：
 
@@ -123,19 +131,20 @@ SnowLuma 也可以换成 NapCat 等其它 OneBot v11 实现，脚本只依赖 On
 | `astrbot_plugin_virtual_activity` | Kasenoon | [Kasenoon/astrbot_plugin_virtual_activity](https://github.com/Kasenoon/astrbot_plugin_virtual_activity) | MIT | 她的屋子、家具、活动 |
 | `astrbot_plugin_sugar_debounce` | SucRoseZT | [SucRoseZT/astrbot_plugin_sugar_debounce](https://github.com/SucRoseZT/astrbot_plugin_sugar_debounce) | MIT | 多图 / 图文合并成一条 |
 
-### 没公开的插件
+### 随仓库附带的插件（`plugins/`）
 
-下面这些是作者自用、暂未开源的，**仓库里没有，也装不到**：
+这五个是自己写的，MIT，跟着仓库一起发布：
 
-```
-astrbot_plugin_fish_memory   长期记忆：提炼事实、写反思、回话前带上；忌语过滤
-astrbot_plugin_file_reader   收到文件自动读取（PDF/Word/Excel/PPT）
-astrbot_plugin_recall_guard  撤回的消息不回复、也不留在上下文
-astrbot_plugin_room_nudge    隔一阵提醒她动动屋子
-astrbot_plugin_time_sense    知道距离上次对话过了多久
-```
+| 插件 | 作用 |
+| --- | --- |
+| `astrbot_plugin_fish_memory` | 长期记忆：提炼事实、写反思、回话前带上；忌语过滤（读 `data/style_rules.json`） |
+| `astrbot_plugin_file_reader` | 收到文件自动读（PDF / Word / Excel / PPT / 网页 / 代码），长文件分段读完给结论 |
+| `astrbot_plugin_recall_guard` | 撤回的消息不回复，也不留在上下文里 |
+| `astrbot_plugin_room_nudge` | 隔一段时间提醒她动动屋子 |
+| `astrbot_plugin_time_sense` | 让她知道距上次对话过了多久 |
 
-缺了它们，这套壳照样能跑：能回消息、能写日记、能发说说、能看屋子，但**没有长期记忆和忌语过滤**（也就是人格里「不要说的话」那节没有代码兜底）。想要完整效果，需要自己实现等价功能。
+它们假定目录结构是 `deps/astrbot-home/data/plugins/<插件>/`，项目根在往上五层。
+换布局要改各自 `main.py` 顶部的 `ASTRBOT_DIR` / `QQ_DIR`。
 
 ### 本仓库的代码
 
@@ -151,6 +160,8 @@ astrbot_plugin_time_sense    知道距离上次对话过了多久
 - `astrbot_plugin_shoubanhua`：注释掉了若干用不上的工具注册（PDF、批量处理、人设自拍等）
 
 clone 下来后用原版插件，这些工具不存在，人格里对应的那句会调不到——按需删掉或自己加补丁。
+
+另外 `plugins/` 里的是脱敏版：作者自用版本里有些行为（比如和本地小屋、说说的联动）被简化过，以仓库里这份为准。
 
 ### 许可提示
 

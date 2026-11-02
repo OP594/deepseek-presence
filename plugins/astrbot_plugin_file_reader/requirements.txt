@@ -1,0 +1,3 @@
+# 依赖都已经在 AstrBot 环境里：pymupdf、python-docx、openpyxl、xlrd、python-pptx
+# 如果某个格式报缺库，按需补：
+#   pip install pymupdf python-docx openpyxl xlrd python-pptx
