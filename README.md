@@ -6,7 +6,7 @@
 
 这里只有**壳**：没有角色设定、没有聊天记录、没有任何人的账号信息。人格、记忆、房子都是你自己填的。
 
-模型默认走 DeepSeek（`deepseek-chat` / `deepseek-reasoner`），在 AstrBot 里配 key 即可；接口是 OpenAI 兼容的，换别家也能跑。
+模型默认走 DeepSeek：`deepseek-v4-pro` 当对话主模型，`deepseek-v4.1-flash` 干识图、压缩、写日记这类杂活——分工省钱，回复也稳。在 AstrBot 里配 key 即可；接口是 OpenAI 兼容的，换别家也能跑。
 
 > Windows 专用。依赖 AstrBot 4.29.x。Linux 需要自己写 systemd 单元，脚本逻辑是通的。
 
