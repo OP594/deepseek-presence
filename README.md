@@ -144,7 +144,7 @@ AstrBot 里配 provider：主模型 `deepseek-v4-pro`，识图和杂活用 `deep
 | 打开 http://127.0.0.1:6185，设网页密码 | AstrBot 首次启动要求 | 是 |
 | 在同一个页面填 DeepSeek 的 key | 没 key 她不会说话 | 是 |
 | 她收到第一条消息后跑 `scripts\find_umo.py`，把结果填进 `config.json` 的 `umo` | 主动消息、屋子活动要靠它定位会话 | 建议 |
-| 想让她画画，再配一个生图插件的 key | 画图能力来自第三方插件 | 可选 |
+| 想让她画画，在 `install.bat` 里选画图服务并贴 key（也可以跳过，以后在插件设置里填） | 画图能力来自第三方插件 | 可选 |
 
 填完 `umo` 后重启一次 `scripts\start-all.bat`。
 
@@ -168,6 +168,23 @@ deps\venv\Scripts\python scripts\gui.py 家
 `persona.example.md` 是个模板，写清了她怎么说话、不能说什么、有哪些工具。把 `(名字)` 换掉，然后写进 AstrBot 的人格里（WebUI → 人格，或直接改数据库 `personas.system_prompt`）。
 
 **忌语不要手写进人格。** `scripts/style_sync.py` 会从 `data/style_rules.json` 生成人格里「不要说的话」那一节，插件出口也读同一个文件——改一处，两边一起变。
+
+## 画图
+
+`install.bat` 会问你一句「要不要配画图」，选一个服务、贴一个 key，她就能画了：
+
+| 选项 | 服务 | 模型 | key 在哪拿 |
+| --- | --- | --- | --- |
+| 1 | 智谱 | `cogview-4-250304` | <https://open.bigmodel.cn/usercenter/apikeys> |
+| 2 | 硅基流动 | `Kwai-Kolors/Kolors`（FLUX 系） | <https://cloud.siliconflow.cn/account/ak> |
+| 3 | 火山方舟 | `doubao-seedream-4-0-250828` | <https://console.volcengine.com/ark> |
+
+装的时候没填也没关系：AstrBot 的插件设置里能补，或者直接改
+`deps\astrbot-home\data\config\astrbot_plugin_shoubanhua_config.json`。
+
+**画图能力来自第三方插件 `shoubanhua`**，本仓库只是把它装好、把接口和模型配好。
+出图质量和额度由你选的那家决定：智谱的免费额度带水印，硅基流动注册送额度，方舟要先用控制台开通。
+写实的人和手容易崩，这是模型的问题，不是配置问题。
 
 ## 来源与致谢
 

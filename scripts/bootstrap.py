@@ -279,6 +279,81 @@ def write_plugin_configs() -> None:
     say("几个插件的配置也填好了")
 
 
+IMAGE_PROVIDERS = {
+    "1": {
+        "label": "智谱（推荐，cogview-4）",
+        "interface_mode": "custom_endpoint",
+        "base_url": "https://open.bigmodel.cn/api/paas/v4/images/generations",
+        "model": "cogview-4-250304",
+        "key_url": "https://open.bigmodel.cn/usercenter/apikeys",
+    },
+    "2": {
+        "label": "硅基流动（FLUX，注册送额度）",
+        "interface_mode": "openai_image",
+        "base_url": "https://api.siliconflow.cn/v1",
+        "model": "Kwai-Kolors/Kolors",
+        "key_url": "https://cloud.siliconflow.cn/account/ak",
+    },
+    "3": {
+        "label": "火山方舟（Seedream）",
+        "interface_mode": "custom_endpoint",
+        "base_url": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+        "model": "doubao-seedream-4-0-250828",
+        "key_url": "https://console.volcengine.com/ark",
+    },
+}
+
+
+def write_image_config(key: str = "", provider: str = "", assume_yes: bool = False) -> None:
+    """问一句要不要配画图，一个 key 就够。"""
+    conf = ASTRBOT / "data" / "config" / "astrbot_plugin_shoubanhua_config.json"
+    if conf.exists():
+        say("画图配置已存在，不改")
+        return
+
+    if not key and assume_yes:
+        say("跳过了画图（--yes 模式没给 key）")
+        return
+    print(
+        "\n要不要现在就配画图？（只填一个 key 就能让她画）\n"
+        "  1 智谱 cogview-4　2 硅基流动 FLUX　3 火山方舟 Seedream　0 先跳过"
+    )
+    pick = (provider or input("  选 [1]：").strip()) or "1"
+    if pick in ("0", "n", "no"):
+        say("跳过了画图，以后可以在 AstrBot 插件设置里填")
+        return
+    prov = IMAGE_PROVIDERS.get(pick)
+    if not prov:
+        say("没这个选项，跳过")
+        return
+
+    if not key:
+        print(f"  用 {prov['label']}，key 在这里拿：{prov['key_url']}")
+    if not key:
+        key = input("  贴 key（回车跳过）：").strip()
+    if not key:
+        say("没填 key，跳过画图")
+        return
+
+    cfg = {
+        "interface_mode": prov["interface_mode"],
+        "base_url": prov["base_url"],
+        "api_keys": key,
+        "model": prov["model"],
+        "text_to_image_model": prov["model"],
+        "enable_llm_tool": True,
+        "enable_llm_auto_detect": True,
+        "llm_cooldown_seconds": 10,
+        "enable_persona_mode": False,
+        "enable_preset_ref_images": False,
+        "image_resolution": "1K",
+        "image_aspect_ratio": "4:3",
+    }
+    conf.parent.mkdir(parents=True, exist_ok=True)
+    conf.write_text(json.dumps(cfg, ensure_ascii=False, indent=2), encoding="utf-8")
+    say(f"画图配好了：{prov['model']}")
+
+
 def init_persona(py: Path) -> None:
     script = SCRIPTS / "init_persona.py"
     if script.exists():
@@ -290,6 +365,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--yes", action="store_true", help="不问，直接装（表示已同意 SnowLuma 的 EULA）")
     ap.add_argument("--reuse-python", action="store_true", help="自测用：用当前解释器，不建 venv")
+    ap.add_argument("--image-key", default="", help="画图 key（给了就不问）")
+    ap.add_argument("--image-provider", default="", help="1 智谱 / 2 硅基流动 / 3 火山方舟")
     args = ap.parse_args()
 
     DEPS.mkdir(parents=True, exist_ok=True)
@@ -304,6 +381,7 @@ def main() -> None:
     install_plugins(py)
     write_config()
     write_plugin_configs()
+    write_image_config(args.image_key, args.image_provider, args.yes)
     init_persona(py)
 
     print(
