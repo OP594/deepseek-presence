@@ -126,6 +126,18 @@ def install_plugins(py: Path) -> None:
 
                 shutil.copytree(p, dst)
 
+    # 仓库里已经 vendored 的那几个优先，省得再下
+    vendored = ROOT / "vendor" / "plugins"
+    if vendored.exists():
+        say("放入 vendor/plugins 里的四个第三方插件 …")
+        for p in vendored.iterdir():
+            if p.is_dir():
+                dst = plugins_dir / p.name
+                if not dst.exists():
+                    import shutil
+
+                    shutil.copytree(p, dst)
+
     for name, url in PLUGINS.items():
         dst = plugins_dir / f"astrbot_plugin_{name}"
         if dst.exists():

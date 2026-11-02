@@ -15,6 +15,9 @@ scripts/data/*.json
 scripts/logs/
 scripts/out/
 
+# 打进来的第三方插件要提交
+# （vendor/ 不在忽略列表里）
+
 # 依赖（自己装）
 deps/
 __pycache__/

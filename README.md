@@ -71,15 +71,15 @@ install.bat
 1. 建虚拟环境 `deps\venv`
 2. 从 PyPI 装 AstrBot 4.29.4
 3. 下载 SnowLuma v2.3.4（会先请你确认它的 EULA）
-4. 下载四个第三方插件，连同仓库自带的五个一起放进插件目录
+4. 把仓库里的九个插件（自带五个 + `vendor/` 里四个）复制进插件目录
 5. 问你名字和 QQ 号，生成 `config.json`
 6. 把人格写进 AstrBot
 
 装完打开 [http://127.0.0.1:6185](http://127.0.0.1:6185) 配 provider 和 key，然后 `scripts\start-all.bat`。
 
-> 为什么不把这些直接塞进仓库：AstrBot 是 AGPL-3.0（从 PyPI 装最干净），
-> SnowLuma 的 EULA 不允许再分发官方发行包，插件也各有各的许可。
-> 脚本做的是「替你下载、替你放好」，不是「替你再发一份」。
+> 能打包的都打包了：四个插件放在 `vendor/plugins/`（各自 LICENSE 原样保留）。
+> AstrBot 是 PyPI 上的包，钉版本安装比拷一份干净；SnowLuma 的 EULA 明令不许再分发官方发行包，
+> 所以只有它还得现场下载——脚本会在下载前请你确认它的条款。
 
 ### 手动装
 
@@ -162,21 +162,21 @@ deps\venv\Scripts\python scripts\gui.py 家
 
 ### 运行平台
 
-| 项目 | 作用 | 出处 | 许可 |
-| --- | --- | --- | --- |
-| **AstrBot** | 对话主体：人格、会话、插件、WebUI | [AstrBotDevs/AstrBot](https://github.com/AstrBotDevs/AstrBot) | AGPL-3.0 |
-| **SnowLuma** | QQ NT 接入，提供 OneBot v11（HTTP / WS） | [SnowLuma/SnowLuma](https://github.com/SnowLuma/SnowLuma) | 自定义 EULA（见其仓库） |
+| 项目 | 作用 | 出处 | 许可 | 随仓库 |
+| --- | --- | --- | --- | --- |
+| **AstrBot** | 对话主体：人格、会话、插件、WebUI | [AstrBotDevs/AstrBot](https://github.com/AstrBotDevs/AstrBot) | AGPL-3.0 | 否，`pip install astrbot==4.29.4` |
+| **SnowLuma** | QQ NT 接入，提供 OneBot v11（HTTP / WS） | [SnowLuma/SnowLuma](https://github.com/SnowLuma/SnowLuma) | 自定义 EULA（禁止再分发发行包） | 否，装的时候下载 |
 
 SnowLuma 也可以换成 NapCat 等其它 OneBot v11 实现，脚本只依赖 OneBot 协议。
 
 ### AstrBot 插件（来自 GitHub，需自己装）
 
-| 插件 | 作者 | 出处 | 许可 | 用途 |
-| --- | --- | --- | --- | --- |
-| `astrbot_plugin_proactive_chat` | DBJD-CR | [Pancakes-Labs/astrbot_plugin_proactive_chat](https://github.com/Pancakes-Labs/astrbot_plugin_proactive_chat) | AGPL-3.0 | 主动消息 |
-| `astrbot_plugin_shoubanhua` | shskjw | [shskjw/astrbot_plugin_shoubanhua](https://github.com/shskjw/astrbot_plugin_shoubanhua) | AGPL-3.0 | 文生图 / 图生图 |
-| `astrbot_plugin_virtual_activity` | Kasenoon | [Kasenoon/astrbot_plugin_virtual_activity](https://github.com/Kasenoon/astrbot_plugin_virtual_activity) | MIT | 她的屋子、家具、活动 |
-| `astrbot_plugin_sugar_debounce` | SucRoseZT | [SucRoseZT/astrbot_plugin_sugar_debounce](https://github.com/SucRoseZT/astrbot_plugin_sugar_debounce) | MIT | 多图 / 图文合并成一条 |
+| 插件 | 作者 | 出处 | 许可 | 随仓库 | 用途 |
+| --- | --- | --- | --- | --- | --- |
+| `astrbot_plugin_proactive_chat` | DBJD-CR | [Pancakes-Labs/astrbot_plugin_proactive_chat](https://github.com/Pancakes-Labs/astrbot_plugin_proactive_chat) | AGPL-3.0 | 是（vendor/） | 主动消息 |
+| `astrbot_plugin_shoubanhua` | shskjw | [shskjw/astrbot_plugin_shoubanhua](https://github.com/shskjw/astrbot_plugin_shoubanhua) | AGPL-3.0 | 是（vendor/，带本地补丁） | 文生图 / 图生图 |
+| `astrbot_plugin_virtual_activity` | Kasenoon | [Kasenoon/astrbot_plugin_virtual_activity](https://github.com/Kasenoon/astrbot_plugin_virtual_activity) | MIT | 是（vendor/，带本地补丁） | 她的屋子、家具、活动 |
+| `astrbot_plugin_sugar_debounce` | SucRoseZT | [SucRoseZT/astrbot_plugin_sugar_debounce](https://github.com/SucRoseZT/astrbot_plugin_sugar_debounce) | MIT | 是（vendor/） | 多图 / 图文合并成一条 |
 
 ### 随仓库附带的插件（`plugins/`）
 
@@ -206,7 +206,8 @@ SnowLuma 也可以换成 NapCat 等其它 OneBot v11 实现，脚本只依赖 On
 - `astrbot_plugin_virtual_activity`：新增了一个 `decorate_room` 工具，让人格里的工具列表能真的给她添家具
 - `astrbot_plugin_shoubanhua`：注释掉了若干用不上的工具注册（PDF、批量处理、人设自拍等）
 
-clone 下来后用原版插件，这些工具不存在，人格里对应的那句会调不到——按需删掉或自己加补丁。
+`vendor/plugins/` 里的这两份**就是改过的版本**，所以 `install.bat` 装出来的能直接用；
+如果你更想用上游原版，把 `vendor/` 里对应目录删掉，脚本会去 GitHub 拉原版（那时人格里那句工具会调不到）。
 
 另外 `plugins/` 里的是脱敏版：作者自用版本里有些行为（比如和本地小屋、说说的联动）被简化过，以仓库里这份为准。
 
