@@ -42,7 +42,7 @@ def load() -> dict:
         return _cache
     data = dict(DEFAULTS)
     try:
-        data.update(json.loads(CONFIG.read_text(encoding="utf-8")))
+        data.update(json.loads(CONFIG.read_text(encoding="utf-8-sig")))
     except Exception:  # noqa: BLE001
         pass
     _cache = data

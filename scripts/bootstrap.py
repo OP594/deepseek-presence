@@ -17,6 +17,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -164,6 +165,41 @@ def install_plugins(py: Path) -> None:
     say("插件放好了")
 
 
+def init_astrbot_home(py: Path) -> None:
+    """astrbot init -y：建好 data/ 和配置骨架。"""
+    exe = py.parent / "astrbot.exe"
+    ASTRBOT.mkdir(parents=True, exist_ok=True)
+    if not (ASTRBOT / ".astrbot").exists():
+        say("初始化 AstrBot 目录 …")
+        subprocess.run([str(exe), "init", "-y"], cwd=str(ASTRBOT), check=False)
+    else:
+        say("AstrBot 目录已初始化过")
+
+    db = ASTRBOT / "data" / "data_v4.db"
+    if db.exists():
+        say("数据库已存在，跳过首次启动")
+        return
+
+    say("第一次启动 AstrBot，让它把库建出来（大约 10 秒）…")
+    boot = SCRIPTS / "_boot_once.py"
+    proc = subprocess.Popen(
+        [str(py), "-X", "utf8", str(boot), "6399"],
+        cwd=str(ASTRBOT),
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    for _ in range(60):
+        time.sleep(2)
+        if db.exists():
+            say("库建好了")
+            break
+        if proc.poll() is not None:
+            break
+    subprocess.run(["taskkill", "/T", "/F", "/PID", str(proc.pid)],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(2)
+
+
 def write_config() -> None:
     if CONFIG.exists():
         say("config.json 已存在，不改")
@@ -197,12 +233,18 @@ def init_persona(py: Path) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--yes", action="store_true", help="不问，直接装（表示已同意 SnowLuma 的 EULA）")
+    ap.add_argument("--reuse-python", action="store_true", help="自测用：用当前解释器，不建 venv")
     args = ap.parse_args()
 
     DEPS.mkdir(parents=True, exist_ok=True)
-    py = ensure_venv()
-    install_astrbot(py)
+    if args.reuse_python:
+        py = Path(sys.executable)
+        say(f"用当前解释器：{py}")
+    else:
+        py = ensure_venv()
+        install_astrbot(py)
     install_snowluma(args.yes)
+    init_astrbot_home(py)
     install_plugins(py)
     write_config()
     init_persona(py)
