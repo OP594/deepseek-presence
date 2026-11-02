@@ -58,21 +58,46 @@ scripts/  ← 这套东西
 
 ## 装
 
-按顺序来，缺一步都会跑不起来。
+### 一键装（推荐）
 
-### 1. 装主体
+装好 Python 3.11+ 之后，双击：
 
-- [AstrBot](https://github.com/AstrBotDevs/AstrBot) → 放在 `deps\astrbot-home`，能跑起来（默认 6185）
-- [SnowLuma](https://github.com/SnowLuma/SnowLuma)（或 NapCat）→ 放在 `deps\SnowLuma`，登录你的机器人 QQ，OneBot HTTP 开到 3000
-- Python 3.11+ → 建虚拟环境 `python -m venv deps\venv`
+```
+install.bat
+```
 
-### 2. 装本仓库的依赖
+它会按顺序做完这些事：
+
+1. 建虚拟环境 `deps\venv`
+2. 从 PyPI 装 AstrBot 4.29.4
+3. 下载 SnowLuma v2.3.4（会先请你确认它的 EULA）
+4. 下载四个第三方插件，连同仓库自带的五个一起放进插件目录
+5. 问你名字和 QQ 号，生成 `config.json`
+6. 把人格写进 AstrBot
+
+装完打开 [http://127.0.0.1:6185](http://127.0.0.1:6185) 配 provider 和 key，然后 `scripts\start-all.bat`。
+
+> 为什么不把这些直接塞进仓库：AstrBot 是 AGPL-3.0（从 PyPI 装最干净），
+> SnowLuma 的 EULA 不允许再分发官方发行包，插件也各有各的许可。
+> 脚本做的是「替你下载、替你放好」，不是「替你再发一份」。
+
+### 手动装
+
+想自己控制每一步的话：
+
+#### 1. 装主体
+
+- [AstrBot](https://github.com/AstrBotDevs/AstrBot) → `deps\astrbot-home`（或直接 `pip install astrbot`）
+- [SnowLuma](https://github.com/SnowLuma/SnowLuma)（或 NapCat）→ `deps\SnowLuma`，登录机器人 QQ，OneBot HTTP 开到 3000
+- `python -m venv deps\venv`
+
+#### 2. 装本仓库的依赖
 
 ```bat
 deps\venv\Scripts\pip install -r requirements.txt
 ```
 
-### 3. 配 config.json
+#### 3. 配 config.json
 
 ```bat
 copy config.example.json config.json
@@ -80,50 +105,34 @@ copy config.example.json config.json
 
 | 字段 | 填什么 |
 | --- | --- |
-| `name` | 她叫什么，窗口标题、备份文件名、人格里的名字都用它 |
+| `name` | 她叫什么 |
 | `owner_qq` | 你的 QQ 号 |
 | `self_qq` | 机器人的 QQ 号 |
-| `umo` | 私聊会话 ID，形如 `snowluma:FriendMessage:123456`（在 AstrBot 日志里能看到） |
+| `umo` | 私聊会话 ID，形如 `snowluma:FriendMessage:123456` |
 | `persona_id` | 用哪个人格，一般 `default` |
 
-### 4. 放插件
-
-仓库自带的五个：
+#### 4. 放插件
 
 ```bat
 xcopy /E /I plugins deps\astrbot-home\data\plugins
 ```
 
-另外四个来自 GitHub，按各自 README 装进同一个目录：
+另外四个：
 
-- [proactive_chat](https://github.com/Pancakes-Labs/astrbot_plugin_proactive_chat) —— 主动消息
-- [shoubanhua](https://github.com/shskjw/astrbot_plugin_shoubanhua) —— 画图
-- [virtual_activity](https://github.com/Kasenoon/astrbot_plugin_virtual_activity) —— 她的屋子
-- [sugar_debounce](https://github.com/SucroseZT/astrbot_plugin_sugar_debounce) —— 图文合并
+- [proactive_chat](https://github.com/Pancakes-Labs/astrbot_plugin_proactive_chat)
+- [shoubanhua](https://github.com/shskjw/astrbot_plugin_shoubanhua)
+- [virtual_activity](https://github.com/Kasenoon/astrbot_plugin_virtual_activity)
+- [sugar_debounce](https://github.com/SucroseZT/astrbot_plugin_sugar_debounce)
 
-### 5. 写人格
+#### 5. 写人格
 
 ```bat
 deps\venv\Scripts\python scripts\init_persona.py 你的名字
 ```
 
-它把 `persona.example.md` 里的 `(名字)` 替换掉，写进 AstrBot 的 `personas` 表。
-想改她的性格就改这个文件再跑一次。
+#### 6. 配模型
 
-### 6. 在 AstrBot 里配模型
-
-打开 [http://127.0.0.1:6185](http://127.0.0.1:6185)，配好 provider 和 key：
-主模型 `deepseek-v4-pro`，识图/辅助用 `deepseek-v4.1-flash`。
-
-### 7. 起
-
-```bat
-scripts\start-gui.bat        开窗口看状态
-scripts\start-all.bat        拉起 AstrBot + 全部后台
-```
-
-开机自启：把 `scripts\start-all.vbs` 放进
-`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`。
+AstrBot 里配 provider：主模型 `deepseek-v4-pro`，识图和杂活用 `deepseek-v4.1-flash`。
 
 ## 用
 
