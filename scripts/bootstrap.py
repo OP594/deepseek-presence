@@ -223,6 +223,62 @@ def write_config() -> None:
     say(f"config.json 写好了：{CONFIG}")
 
 
+def write_plugin_configs() -> None:
+    """按 config.json 把几个插件的关键项填好，省得用户一个个点。"""
+    if not CONFIG.exists():
+        return
+    cfg = json.loads(CONFIG.read_text(encoding="utf-8-sig"))
+    name = cfg.get("name") or "companion"
+    owner = int(cfg.get("owner_qq") or 0)
+    umo = cfg.get("umo") or ""
+    conf_dir = ASTRBOT / "data" / "config"
+    conf_dir.mkdir(parents=True, exist_ok=True)
+
+    if owner and not (conf_dir / "astrbot_plugin_proactive_chat_config.json").exists():
+        (conf_dir / "astrbot_plugin_proactive_chat_config.json").write_text(
+            json.dumps(
+                {
+                    "friend_settings": {
+                        "enable": True,
+                        "session_list": [umo] if umo else [],
+                        "schedule_settings": {
+                            "min_interval_minutes": 60,
+                            "max_interval_minutes": 240,
+                            "quiet_hours": "2-8",
+                            "max_unanswered_times": 2,
+                        },
+                        "tts_settings": {"enable_tts": False},
+                    },
+                    "group_settings": {"enable": False},
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+
+    if owner and not (conf_dir / "astrbot_plugin_virtual_activity_config.json").exists():
+        (conf_dir / "astrbot_plugin_virtual_activity_config.json").write_text(
+            json.dumps(
+                {
+                    "enable_auto_tick": True,
+                    "tick_min_minutes": 25,
+                    "tick_max_minutes": 50,
+                    "active_hours": "09:00-23:30",
+                    "quiet_hours": "01:00-08:30",
+                    "admin_qq": str(owner),
+                    "admin_umo": umo,
+                    "inject_prompt": True,
+                    "weather_enabled": False,
+                },
+                ensure_ascii=False,
+                indent=2,
+            ),
+            encoding="utf-8",
+        )
+    say("几个插件的配置也填好了")
+
+
 def init_persona(py: Path) -> None:
     script = SCRIPTS / "init_persona.py"
     if script.exists():
@@ -247,6 +303,7 @@ def main() -> None:
     init_astrbot_home(py)
     install_plugins(py)
     write_config()
+    write_plugin_configs()
     init_persona(py)
 
     print(
