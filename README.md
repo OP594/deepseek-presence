@@ -100,19 +100,63 @@ deps\venv\Scripts\python scripts\gui.py 家
 
 **忌语不要手写进人格。** `scripts/style_sync.py` 会从 `data/style_rules.json` 生成人格里「不要说的话」那一节，插件出口也读同一个文件——改一处，两边一起变。
 
-## 需要的 AstrBot 插件（不在本仓库）
+## 来源与致谢
 
-这些是别人写的，各自有 license，请自行安装：
+这套壳本身不发明轮子：机器人框架、QQ 接入、记忆、生图、作息、主动消息，绝大部分来自别人的开源项目。
+**本仓库只包含 `scripts/` 下的那批脚本**，下面这些都不在仓库里，需要你自己装。
 
-| 插件 | 用途 | 必需 |
-| --- | --- | --- |
-| `astrbot_plugin_fish_memory` | 长期记忆 + 工具注入 + 忌语过滤 | 是 |
-| `astrbot_plugin_virtual_activity` | 她的屋子、家具、活动 | 可选 |
-| `astrbot_plugin_proactive_chat` | 主动消息 | 可选 |
-| `astrbot_plugin_sugar_debounce` | 多图合并 | 可选 |
-| 任意生图插件 | 画图工具 | 可选 |
+### 运行平台
 
-`diary.py`、`qzone_*.py` 依赖 AstrBot 的数据库表结构（`personas`、`conversations`）和 OneBot 的 `get_qzone_msg_list` 等接口。换版本或换客户端时，先跑一遍看日志。
+| 项目 | 作用 | 出处 | 许可 |
+| --- | --- | --- | --- |
+| **AstrBot** | 对话主体：人格、会话、插件、WebUI | [AstrBotDevs/AstrBot](https://github.com/AstrBotDevs/AstrBot) | AGPL-3.0 |
+| **SnowLuma** | QQ NT 接入，提供 OneBot v11（HTTP / WS） | [SnowLuma/SnowLuma](https://github.com/SnowLuma/SnowLuma) | 自定义 EULA（见其仓库） |
+
+SnowLuma 也可以换成 NapCat 等其它 OneBot v11 实现，脚本只依赖 OneBot 协议。
+
+### AstrBot 插件（来自 GitHub，需自己装）
+
+| 插件 | 作者 | 出处 | 许可 | 用途 |
+| --- | --- | --- | --- | --- |
+| `astrbot_plugin_proactive_chat` | DBJD-CR | [Pancakes-Labs/astrbot_plugin_proactive_chat](https://github.com/Pancakes-Labs/astrbot_plugin_proactive_chat) | AGPL-3.0 | 主动消息 |
+| `astrbot_plugin_shoubanhua` | shskjw | [shskjw/astrbot_plugin_shoubanhua](https://github.com/shskjw/astrbot_plugin_shoubanhua) | AGPL-3.0 | 文生图 / 图生图 |
+| `astrbot_plugin_virtual_activity` | Kasenoon | [Kasenoon/astrbot_plugin_virtual_activity](https://github.com/Kasenoon/astrbot_plugin_virtual_activity) | MIT | 她的屋子、家具、活动 |
+| `astrbot_plugin_sugar_debounce` | SucRoseZT | [SucRoseZT/astrbot_plugin_sugar_debounce](https://github.com/SucRoseZT/astrbot_plugin_sugar_debounce) | MIT | 多图 / 图文合并成一条 |
+
+### 没公开的插件
+
+下面这些是作者自用、暂未开源的，**仓库里没有，也装不到**：
+
+```
+astrbot_plugin_fish_memory   长期记忆：提炼事实、写反思、回话前带上；忌语过滤
+astrbot_plugin_file_reader   收到文件自动读取（PDF/Word/Excel/PPT）
+astrbot_plugin_recall_guard  撤回的消息不回复、也不留在上下文
+astrbot_plugin_room_nudge    隔一阵提醒她动动屋子
+astrbot_plugin_time_sense    知道距离上次对话过了多久
+```
+
+缺了它们，这套壳照样能跑：能回消息、能写日记、能发说说、能看屋子，但**没有长期记忆和忌语过滤**（也就是人格里「不要说的话」那节没有代码兜底）。想要完整效果，需要自己实现等价功能。
+
+### 本仓库的代码
+
+`scripts/` 下的脚本（看护、日记、说说、评论、代理、备份、GUI、屋子渲染）是为这个项目写的，
+依赖 Python 标准库 + `pillow` + `websocket-client`。
+行为上参考了上面那些插件，但**没有拷贝它们的源代码**；唯一的例外见下面的“本地补丁”。
+
+### 本地补丁声明
+
+作者在自己的机器上对这些第三方插件做过改动，**改动不在本仓库**：
+
+- `astrbot_plugin_virtual_activity`：新增了一个 `decorate_room` 工具，让人格里的工具列表能真的给她添家具
+- `astrbot_plugin_shoubanhua`：注释掉了若干用不上的工具注册（PDF、批量处理、人设自拍等）
+
+clone 下来后用原版插件，这些工具不存在，人格里对应的那句会调不到——按需删掉或自己加补丁。
+
+### 许可提示
+
+本仓库是 MIT，但**运行时要装的 AstrBot 和部分插件是 AGPL-3.0**。
+如果你的使用方式构成“通过网络提供修改版服务”，AGPL 可能要求你公开自己的改动；
+本仓库的脚本是独立进程、通过 HTTP / 数据库与 AstrBot 通信，作者的理解是不构成衍生作品，但这不是法律意见。
 
 ## 已知边界
 
