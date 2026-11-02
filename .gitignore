@@ -1,6 +1,7 @@
 # 运行数据，别提交
 logs/
-data/
+data/*
+!data/style_rules.json
 out/
 backups/
 *.db
