@@ -35,9 +35,7 @@ _ALLOW_JIEZHE = ("接着说", "接着聊", "接着讲", "接着做", "接着走"
                  "接着问", "接着看", "接着写", "接着听", "接着待", "接着往下")
 
 
-RULES_FILE = Path(
-    str(ASTRBOT_DIR.parent.parent / "data" / "style_rules.json")
-)
+RULES_FILE = ASTRBOT_DIR.parent.parent / "data" / "style_rules.json"
 _rules_cache: dict = {"mtime": -1.0, "data": None}
 
 

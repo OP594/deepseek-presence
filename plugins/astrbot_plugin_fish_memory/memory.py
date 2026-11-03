@@ -23,7 +23,7 @@ from pathlib import Path
 DATA_DIR = Path(__file__).resolve().parent
 DB_PATH = DATA_DIR / "memory.db"
 
-CONSOLIDATE_EVERY = 8
+CONSOLIDATE_EVERY = 12
 FACTS_LIMIT = 25
 
 CONSOLIDATE_INSTRUCTION = """你在帮一个 AI 整理记忆。下面是你和对方最近的一段对话。
@@ -35,7 +35,7 @@ CONSOLIDATE_INSTRUCTION = """你在帮一个 AI 整理记忆。下面是你和�
 - facts 只收长期有价值的信息：名字、习惯、在意的人、反复出现的情绪、明确说过的喜好或厌恶、重要日期、正在做的事。
 - 不记录一次性的琐事，不复述对话，不编造。
 - 每条 content 不超过 40 字，用第三人称写 ta。
-- facts 最多 6 条；没有值得记的就给 []。
+- facts 最多 4 条；没有值得记的就给 []。
 - reflection 用第一人称，一到两句，写这段对话让你对 ta 的理解或心情。
 """
 
