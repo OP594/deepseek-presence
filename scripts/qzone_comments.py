@@ -103,6 +103,8 @@ def scan() -> int:
 
 
 def main() -> None:
+    if not common.single_instance("comments"):
+        return
     # 心跳必须 30 秒一次，否则看护会以为它死了，重复拉起好几个。
     common.heartbeat("comments")
     log("评论监控启动")

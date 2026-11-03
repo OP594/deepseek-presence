@@ -29,6 +29,7 @@ start "" /b "%PYW%" "%SCRIPTS%qzone_daemon.py"
 
 rem AstrBot
 start "" /b /d "%DEPS%\astrbot-home" "%DEPS%\venv\Scripts\astrbot.exe" run -p 6185
+echo [%date% %time%] astrbot launched >> "%LOGS%\bot.log"
 
 rem replay messages missed while off
 start "" /b "%SCRIPTS%catchup-delayed.bat"

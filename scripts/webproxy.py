@@ -8,6 +8,7 @@
     py webproxy.py        前台跑
 """
 
+import common
 import json
 import threading
 import time
@@ -17,7 +18,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent  # 项目根
-CONF = BASE / "QQ机器人" / "data" / "dashboard.json"
+CONF = BASE / "data" / "dashboard.json"
 TARGET = "http://127.0.0.1:6185"
 PORT = 6186
 
@@ -165,6 +166,9 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
+    if not common.single_instance("webproxy"):
+        return
+    common.heartbeat("webproxy")
     beat()
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     print(f"代理已启动：http://127.0.0.1:{PORT}/  →  {TARGET}")

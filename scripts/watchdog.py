@@ -86,6 +86,8 @@ def restart_node() -> None:
 
 
 def main() -> None:
+    if not common.single_instance("watchdog"):
+        return
     common.heartbeat("watchdog")
     fails = 0
     while True:

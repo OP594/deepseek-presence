@@ -22,8 +22,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-QQ = Path(__file__).resolve().parent
-BASE = QQ.parent
+SCRIPTS = Path(__file__).resolve().parent
+BASE = SCRIPTS.parent
+QQ = BASE  # 运行数据（logs/ data/ out/）都放在项目根
 DEPS = BASE / "deps"
 VENV = DEPS / "venv" / "Scripts"
 BEAT = QQ / "logs" / "beat"
@@ -84,7 +85,7 @@ def spawn(args: list[str], cwd: Path, name: str | None = None) -> bool:
         except Exception:  # noqa: BLE001
             out = subprocess.DEVNULL
     try:
-        subprocess.Popen(
+        proc = subprocess.Popen(
             args,
             cwd=str(cwd),
             creationflags=FLAGS,
@@ -92,6 +93,11 @@ def spawn(args: list[str], cwd: Path, name: str | None = None) -> bool:
             stdout=out,
             stderr=out,
         )
+        time.sleep(1.5)
+        if proc.poll() is not None:
+            # 多半是单实例锁把它挡住了：已经有一份在跑，别记成“起来了”
+            log(f"{name or Path(args[0]).name} 启动后立刻退出（已在运行），跳过")
+            return False
         return True
     except Exception as exc:  # noqa: BLE001
         log(f"拉起失败 {args[0]}：{type(exc).__name__}: {exc}")

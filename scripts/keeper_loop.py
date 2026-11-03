@@ -6,6 +6,7 @@
 每轮重新加载 keeper 模块，改完 keeper.py 不用重启这个循环。
 """
 
+import common
 import ctypes
 import importlib
 import json
@@ -57,7 +58,7 @@ def write_lock() -> None:
 
 
 def main() -> None:
-    if already_running():
+    if not common.single_instance("keeperloop"):
         return
     while True:
         write_lock()

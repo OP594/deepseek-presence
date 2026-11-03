@@ -93,6 +93,7 @@ def ask(state: dict, recent: list, chat: str) -> str:
         f"你今天在家的活动（最近几条）：\n{acts or '（没有记录）'}\n\n"
         f"你现在在：{here}\n"
         f"你和 ta 最近聊到：\n{chat or '（最近没聊什么）'}\n\n"
+        "ta 是女生，提到她一律用“她”，不要写成“他”。\n"
         "用第一人称写一两句今天的日记，像随手记下来的那样，20 到 80 个字，句子要完整。"
         "不要汇报口吻、不要列举、不要加引号、不要话题标签。只输出正文。"
     )
@@ -201,6 +202,8 @@ def next_due(now: datetime) -> datetime:
 
 
 def main() -> None:
+    if not common.single_instance("diary"):
+        return
     if "--once" in sys.argv:
         tick()
         return

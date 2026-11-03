@@ -25,7 +25,7 @@ STATE = common.QQ / "data" / "qzone_state.json"
 CHECK_EVERY = (45 * 60, 90 * 60)
 POST_GAP = 30 * 60
 POST_PER_DAY = 999
-SIGN_GAP = 12 * 3600
+SIGN_GAP = 24 * 3600
 
 
 def log(msg: str) -> None:
@@ -76,14 +76,14 @@ def ask(kind: str) -> str:
         task = (
             f"现在是 {now}。\n下面是你和 ta 最近的对话：\n{recent_chat()}\n\n"
             "你现在可以自己发一条 QQ 空间说说。"
-            "如果此刻没有想发的，就只输出 SKIP。"
+            "除非你此刻特别想发，否则只输出 SKIP。"
             "如果想发，只输出正文。写多长随你，但说说是短东西，别写成小作文。别加引号、别解释、别写话题标签。"
         )
     else:
         task = (
             f"现在是 {now}。\n下面是你和 ta 最近的对话：\n{recent_chat()}\n\n"
             "你现在可以改一次 QQ 个性签名。"
-            "如果不想改，就只输出 SKIP。"
+            "除非你特别想改，否则只输出 SKIP。"
             "如果想改，只输出新签名，25 字以内，别加引号、别解释。"
         )
 
@@ -165,6 +165,8 @@ def tick(dry: bool = False) -> None:
 
 
 def main() -> None:
+    if not common.single_instance("qzone"):
+        return
     if "--dry" in sys.argv:
         tick(dry=True)
         return

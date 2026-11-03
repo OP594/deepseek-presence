@@ -87,6 +87,8 @@ def restart_astrbot() -> None:
 
 
 def main() -> None:
+    if not common.single_instance("wakeguard"):
+        return
     common.heartbeat("wakeguard")
     last = time.monotonic()
     while True:

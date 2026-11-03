@@ -5,6 +5,7 @@
 心跳间隔、日志格式、token 和 key 的读法都只有这一处。改这里，所有小工一起变。
 """
 
+import sys
 import glob
 import json
 import sqlite3
@@ -81,3 +82,23 @@ def persona() -> str:
     finally:
         conn.close()
     return row[0] if row else ""
+
+
+_MUTEXES: dict[str, object] = {}
+
+
+def single_instance(name: str) -> bool:
+    """同一个名字只允许一个进程。第二个实例返回 False。"""
+    if sys.platform != "win32":
+        return True
+    try:
+        import ctypes
+
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.CreateMutexW(None, False, f"Global\\companion_{name}")
+        if kernel32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
+            return False
+        _MUTEXES[name] = handle
+        return True
+    except Exception:  # noqa: BLE001
+        return True

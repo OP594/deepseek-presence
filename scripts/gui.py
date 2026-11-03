@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""一个程序，两种用法。
+""" 一个程序，两种用法。
 
 双击（或 start-gui.bat）= 打开窗口，用按钮看：
     状态 / 今天 / 昨天 / 前天 / 日期 + 看这天 / 搜索
@@ -220,7 +220,7 @@ def activity_lines(limit: int = 15) -> list[str]:
 
 def build() -> Path:
     today = datetime.now().strftime("%Y-%m-%d")
-    lines = [f"# {name()} · 总览", "", f"生成于 {datetime.now():%Y-%m-%d %H:%M}", ""]
+    lines = ["# deepseek-presence · 总览", "", f"生成于 {datetime.now():%Y-%m-%d %H:%M}", ""]
     lines += status_lines()
     lines += dialogue_lines(today, limit=16)
     lines += memory_lines()
@@ -299,7 +299,6 @@ class App:
         mid.pack(fill="x")
         for text, fn in (
             ("她的家", self.show_web),
-            ("快照", self.show_home),
             ("活动", self.show_activity),
             ("日记", self.show_diary),
             ("记忆", self.show_memory),
@@ -359,29 +358,6 @@ class App:
             msg,
         )
 
-    def show_home(self) -> None:
-        try:
-            import home_view
-
-            path = home_view.render()
-        except Exception as exc:  # noqa: BLE001
-            self.put(f"画不出来：{exc}")
-            return
-        win = tk.Toplevel(self.root)
-        win.title("她的家")
-        try:
-            from PIL import Image, ImageTk
-
-            im = Image.open(path)
-            im.thumbnail((980, 760))
-            photo = ImageTk.PhotoImage(im)
-            label = tk.Label(win, image=photo)
-            label.image = photo  # 别让 Python 回收
-            label.pack()
-        except Exception as exc:  # noqa: BLE001
-            tk.Label(win, text=f"图打不开：{exc}\n{path}").pack(padx=20, pady=20)
-        self.status.configure(text=f"她的家 · {path.name}")
-
     def show_activity(self) -> None:
         self.put("\n".join(activity_lines()), "她最近的活动")
 
@@ -440,10 +416,6 @@ def console(args: list[str]) -> None:
         print("\n".join(search_lines(args[1])))
     elif arg == "网页":
         print("房间页地址（浏览器手动打开）：http://127.0.0.1:6186/room")
-    elif arg == "家":
-        import home_view
-        print("画好了：", home_view.render())
-        _open_path(home_view.OUT)
     elif arg == "活动":
         print("\n".join(activity_lines()))
     elif arg == "日记":

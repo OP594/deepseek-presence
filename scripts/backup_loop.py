@@ -18,6 +18,8 @@ import common  # noqa: E402
 
 
 def main() -> None:
+    if not common.single_instance("backup"):
+        return
     common.heartbeat("backup")
     while True:
         try:

@@ -17,6 +17,8 @@ ES_DISPLAY_REQUIRED = 0x00000002  # 故意不加，屏幕该灭还灭
 
 
 def main() -> None:
+    if not common.single_instance("awake"):
+        return
     common.heartbeat("awake")
     k32 = ctypes.windll.kernel32
     while True:

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """备份：数据库快照 + 一份人能读的记忆导出。
 
-写到项目根的 backups\\，每个种类保留最近 KEEP 份。
+写到 default-workspace\\backups，每个种类保留最近 KEEP 份。
 云端镜像默认关闭（MIRROR_TO_CLOUD）；打开后才往 OneDrive\\备份 复制。
 """
 
