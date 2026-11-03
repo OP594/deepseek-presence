@@ -148,6 +148,21 @@ def main() -> None:
         if spawn([str(VENV / "pythonw.exe"), str(path)], QQ, name):
             actions.append(f"{script} 起来了")
 
+    # 每 5 分钟补一次断线期间漏回的消息（catchup 自己会判断有没有）
+    if not recently_tried("catchup", 300):
+        mark("catchup")
+        try:
+            subprocess.Popen(
+                [str(VENV / "python.exe"), str(QQ / "catchup.py")],
+                cwd=str(QQ),
+                creationflags=FLAGS,
+                close_fds=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except Exception as exc:  # noqa: BLE001
+            log(f"catchup 拉起失败：{type(exc).__name__}: {exc}")
+
     if actions:
         log("；".join(actions))
         print("；".join(actions))

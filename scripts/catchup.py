@@ -10,6 +10,7 @@
 
 import json
 import sqlite3
+import time
 import urllib.request
 from datetime import datetime
 
@@ -52,22 +53,30 @@ def last_her_message() -> str:
 
 
 def new_messages_after(anchor: str) -> list[str]:
+    """找她最后一条之后、对方发来的消息。用发送者 id 判断，不靠文本匹配。"""
     data = onebot("get_friend_msg_history", {"user_id": FRIEND, "count": 40})
     msgs = (data.get("data") or {}).get("messages") or []
-    texts: list[str] = []
-    found = not anchor
-    for m in msgs:
+    try:
+        self_id = int((onebot("get_login_info", {}).get("data") or {}).get("user_id") or 0)
+    except Exception:  # noqa: BLE001
+        self_id = 0
+    pending: list[str] = []
+    for m in reversed(msgs):
+        uid = m.get("user_id")
+        if uid == self_id:
+            break
         raw = (m.get("raw_message") or "").strip()
-        if not found:
-            if anchor[:12] and anchor[:12] in raw:
-                found = True
-            continue
-        if m.get("user_id") == FRIEND and raw:
-            texts.append(raw)
-    return texts
+        if uid == FRIEND and raw:
+            ts = m.get("time") or 0
+            if ts and time.time() - float(ts) < 90:
+                continue  # 刚发来的，AstrBot 可能正在回，别抢
+            pending.append(raw)
+    return list(reversed(pending))
 
 
 def main() -> None:
+    if not common.single_instance("catchup"):
+        return
     anchor = last_her_message()
     pending = new_messages_after(anchor)
     # 去掉图片占位这类没信息量的

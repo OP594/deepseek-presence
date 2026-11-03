@@ -8,6 +8,9 @@ set "PY=%DEPS%\venv\Scripts\python.exe"
 set "LOGS=%ROOT%\logs"
 if not exist "%LOGS%" mkdir "%LOGS%"
 set PYTHONIOENCODING=utf-8
+set SNOWLUMA_ACCEPT_EULA=1
+set SNOWLUMA_ACCEPT_PRIVACY=1
+set "SNOWLUMA_UPDATE_ROOT=%DEPS%\SnowLuma"
 
 echo [%date% %time%] launcher start >> "%LOGS%\bot.log"
 
